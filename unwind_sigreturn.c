@@ -65,22 +65,52 @@ sigframe_ucontext( struct Unwind_Context *ctx, struct Unwind_Exception *exc )
 	return get_sp( ctx ) + *data;
 }
 
+struct cleanup_cache {
+	void *pc;
+	u32 r0;
+	u32 ip;
+};
+
 pr_response_t
 __eh_personality_sigframe(
 		unwind_state_t state,
 		struct Unwind_Exception *exc,
 		struct Unwind_Context *ctx )
 {
+	if( state.action == US_UNWIND_RESUME ) {
+		struct cleanup_cache *cc = (void *) exc->cleanup_cache;
+
+		set_reg( ctx, 0, cc->r0 );
+		set_reg( ctx, 12, cc->ip );
+		set_pc( ctx, cc->pc );
+
+		return PRC_UNWIND_CONTINUE;
+	}
+
 	struct ucontext *uc = sigframe_ucontext( ctx, exc );
 
-	switch( state.action ) {
-	case US_SCAN:
+	if( state.action == US_SCAN )
 		return sigframe_unwind_virtual( ctx, uc );
-	case US_UNWIND:
-		sigframe_unwind_virtual( ctx, uc );
-		sigprocmask( SIG_SETMASK, &uc->uc_sigmask, NULL );
-		return PRC_UNWIND_CONTINUE;
-	default:
+	if( state.action != US_UNWIND )
 		return PRC_FAILURE;
-	}
+
+	struct sigcontext *mc = &uc->uc_mcontext;
+	struct cleanup_cache *cc = (void *) exc->cleanup_cache;
+
+	// save state needed to resume later
+	cc->pc = next_instruction( mc );
+	cc->r0 = mc->arm_r0;
+	cc->ip = mc->arm_ip;
+
+	// make sigreturn end up calling _Unwind_Resume( exc );
+	u32 pc = (u32) _Unwind_Resume;
+	mc->arm_pc = pc & ~1;
+	if( pc & 1 )
+		mc->arm_cpsr |= T_BIT;
+	else
+		mc->arm_cpsr &= ~T_BIT;
+	mc->arm_r0 = (u32) exc;
+
+	// use sigreturn as cleanup handler
+	return PRC_UNWIND_CLEANUP;
 }

@@ -4,6 +4,4 @@ reliably possible if:
 1. you compile with -fnon-call-exceptions, and
 2. the signal is synchronous (e.g. SIGSEGV)
 
-NOTE:  VFP/Neon and WMMX registers aren't restored yet.
-
 The v1 signal frame format (kernels 2.6.16 and 2.6.17) isn't supported.
