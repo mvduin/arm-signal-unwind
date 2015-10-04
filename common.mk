@@ -15,9 +15,9 @@ CXXFLAGS = ${flags}
 CPPFLAGS = -I . -I include
 flags += -funsigned-char
 flags += -fno-strict-aliasing -fwrapv
-CXXFLAGS += -std=gnu++1z
+CXXFLAGS += -std=gnu++1y
 CXXFLAGS += -fno-operator-names
-flags += -Og -g
+flags += -Og -g -rdynamic
 flags += -Wall -Wextra
 #flags += -Werror
 flags += -Wno-unused-parameter -Wno-error=unused-function
