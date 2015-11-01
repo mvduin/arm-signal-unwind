@@ -9,7 +9,7 @@ CC = ${CROSS_COMPILE}gcc
 LD = ${CXX}
 LDFLAGS =
 LDLIBS =
-flags = -mcpu=cortex-a8 -mfpu=neon -mfloat-abi=hard -mthumb
+flags = -march=armv7-a -mfpu=neon -mfloat-abi=hard -mthumb
 CFLAGS = ${flags}
 CXXFLAGS = ${flags}
 CPPFLAGS = -I . -I include
@@ -17,7 +17,7 @@ flags += -funsigned-char
 flags += -fno-strict-aliasing -fwrapv
 CXXFLAGS += -std=gnu++1y
 CXXFLAGS += -fno-operator-names
-flags += -Og -g -rdynamic
+flags += -Og -g
 flags += -Wall -Wextra
 #flags += -Werror
 flags += -Wno-unused-parameter -Wno-error=unused-function
@@ -53,7 +53,7 @@ $(shell mkdir -p ${depdir})
 CPPFLAGS += -MMD -MQ $@ -MP -MF >( cat >${depdir}/$@.d )
 
 # use them
--include .dep/*.d
+-include ${depdir}/*.d
 
 # clean them up
 clean ::

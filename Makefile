@@ -4,6 +4,7 @@ clean ::
 	${RM} test
 
 test: test.cc unwind_sigreturn.o
+test: LDFLAGS += -rdynamic
 
 unwind_sigreturn.o: unwind_sigreturn.c sa_restorer_v2.S rt_sa_restorer_v2.S
 	${LINK.c} -r -nostdlib ${^:%.h=} ${OUTPUT_OPTION}
