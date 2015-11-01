@@ -5,3 +5,7 @@ reliably possible if:
 2. the signal is synchronous (e.g. SIGSEGV)
 
 The v1 signal frame format (kernels 2.6.16 and 2.6.17) isn't supported.
+
+Usage:
+  make unwind_sigreturn.o
+and link the resulting object into your application or library.
