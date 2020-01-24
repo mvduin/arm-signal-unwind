@@ -8,7 +8,7 @@ typedef __u32  u32;
 #define T_BIT ( 1 << 5 )
 
 static void *
-next_instruction( struct sigcontext const *mc )
+next_instruction( mcontext_t const *mc )
 {
 	// "Wait!", you say, "what about Jazelle?", ... *rolls eyes*
 	//
@@ -21,7 +21,7 @@ next_instruction( struct sigcontext const *mc )
 }
 
 static pr_response_t
-sigframe_unwind_virtual( struct Unwind_Context *ctx, struct ucontext *uc )
+sigframe_unwind_virtual( struct Unwind_Context *ctx, ucontext_t *uc )
 {
 	// simulate a sigreturn, but skip over current instruction
 	// (see also restore_sigframe() in arch/arm/kernel/signal.c)
@@ -47,7 +47,7 @@ sigframe_unwind_virtual( struct Unwind_Context *ctx, struct ucontext *uc )
 	return PRC_SCAN_CONTINUE;
 }
 
-static struct ucontext *
+static ucontext_t *
 sigframe_ucontext( struct Unwind_Context *ctx, struct Unwind_Exception *exc )
 {
 	// consult handler data for offset from SP to ucontext
@@ -87,14 +87,14 @@ __eh_personality_sigframe(
 		return PRC_UNWIND_CONTINUE;
 	}
 
-	struct ucontext *uc = sigframe_ucontext( ctx, exc );
+	ucontext_t *uc = sigframe_ucontext( ctx, exc );
 
 	if( state.action == US_SCAN )
 		return sigframe_unwind_virtual( ctx, uc );
 	if( state.action != US_UNWIND )
 		return PRC_FAILURE;
 
-	struct sigcontext *mc = &uc->uc_mcontext;
+	mcontext_t *mc = &uc->uc_mcontext;
 	struct cleanup_cache *cc = (void *) exc->cleanup_cache;
 
 	// save state needed to resume later
