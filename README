@@ -9,3 +9,35 @@ The v1 signal frame format (kernels 2.6.16 and 2.6.17) isn't supported.
 Usage:
   make unwind_sigreturn.o
 and link the resulting object into your application or library.
+
+
+To verify the code is working properly in your environment, build and run the test/demo:
+  make && ./test
+The expected output is something like this:
+  via return (no siginfo)... ok
+  via return (with siginfo)... ok
+  via exception (no siginfo)... ok
+  via exception (with siginfo)... ok
+
+  backtrace in segv...
+  ./test(_Z9backtracev+0xd)[0x458f72]
+  ./test(_Z17backtrace_handleri+0xb)[0x458f98]
+  ./test(+0x132a)[0x45932a]
+  ./test(_Z9test_segvf+0x11)[0x458fc6]
+  ./test(_Z3barj+0x13)[0x459048]
+  ./test(_Z3fooj+0x5)[0x45902e]
+  ./test(_Z3barj+0x9)[0x45903e]
+  ./test(_Z3fooj+0x5)[0x45902e]
+  ./test(_Z3barj+0x9)[0x45903e]
+  ./test(_Z3fooj+0x5)[0x45902e]
+  ./test(_Z3barj+0x9)[0x45903e]
+  ./test(_Z3fooj+0x5)[0x45902e]
+  ./test(main+0x10f)[0x459160]
+  /lib/arm-linux-gnueabihf/libc.so.6(__libc_start_main+0x97)[0xb6cddaac]
+  ok
+
+  uncaught exception:
+  ./test(_Z9backtracev+0xd)[0x458f72]
+  ./test(_Z15abort_backtracev+0x5)[0x458f86]
+  /usr/lib/arm-linux-gnueabihf/libstdc++.so.6(+0x7c174)[0xb6e64174]
+  Aborted
