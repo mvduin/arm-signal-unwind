@@ -3,6 +3,9 @@ all :: test unwind_sigreturn.o
 clean ::
 	${RM} test
 
+check :: all
+	./test
+
 test: test.cc unwind_sigreturn.o
 test: LDFLAGS += -rdynamic
 
