@@ -14,11 +14,24 @@ void backtrace()
 	backtrace_symbols_fd( ptrs, backtrace( ptrs, countof(ptrs) ), 2 );
 }
 
+static bool expecting_abort_backtrace = false;
+static bool any_test_failed = false;
+
 [[noreturn]]
 void abort_backtrace()
 {
 	backtrace();
-	abort();
+	if( ! expecting_abort_backtrace ) {
+		fprintf( stderr, "Unexpected unhandled exception\n" );
+		any_test_failed = true;
+	}
+	if( any_test_failed ) {
+		fprintf( stderr, "\nOne or more tests failed\n" );
+		abort();
+	} else {
+		fprintf( stderr, "\nAll tests passed\n" );
+		exit( 0 );
+	}
 }
 
 
@@ -61,6 +74,8 @@ void test_segv( float f = 0 )
 		f += 1;
 	}
 
+	if( f != 1 )
+		any_test_failed = true;
 	fprintf( stderr, "%s\n", f == 1 ? "ok" : "FAIL" );
 }
 
@@ -122,7 +137,6 @@ int main()
 
 	fprintf( stderr, "\n" );
 	fprintf( stderr, "uncaught exception:\n" );
+	expecting_abort_backtrace = true;
 	throw IntendedUncaughtException {};
-
-	return 0;
 }
