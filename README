@@ -12,7 +12,7 @@ and link the resulting object into your application or library.
 
 
 To verify the code is working properly in your environment, build and run the test/demo:
-  make && ./test
+  make check
 The expected output is something like this:
   via return (no siginfo)... ok
   via return (with siginfo)... ok
@@ -40,4 +40,5 @@ The expected output is something like this:
   ./test(_Z9backtracev+0xd)[0x458f72]
   ./test(_Z15abort_backtracev+0x5)[0x458f86]
   /usr/lib/arm-linux-gnueabihf/libstdc++.so.6(+0x7c174)[0xb6e64174]
-  Aborted
+
+  All tests passed
