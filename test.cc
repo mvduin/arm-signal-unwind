@@ -20,11 +20,11 @@ static bool any_test_failed = false;
 [[noreturn]]
 void abort_backtrace()
 {
-	backtrace();
 	if( ! expecting_abort_backtrace ) {
-		fprintf( stderr, "Unexpected unhandled exception\n" );
+		fprintf( stderr, "\n*** Unexpected unhandled exception ***\n" );
 		any_test_failed = true;
 	}
+	backtrace();
 	if( any_test_failed ) {
 		fprintf( stderr, "\nOne or more tests failed\n" );
 		abort();
@@ -102,6 +102,13 @@ int main()
 
 	struct sigaction act {};
 
+	fprintf( stderr, "backtrace in segv...\n" );
+	act.sa_handler = backtrace_handler;
+	act.sa_flags = SA_SIGINFO | SA_RESETHAND;
+	sigaction( SIGSEGV, &act, NULL );
+	foo( 3 );
+
+	fprintf( stderr, "\n" );
 	fprintf( stderr, "via return (no siginfo)... " );
 	act.sa_handler = usr1_handler;
 	act.sa_flags = SA_RESETHAND;
@@ -130,12 +137,6 @@ int main()
 
 	fprintf( stderr, "\n" );
 
-	fprintf( stderr, "backtrace in segv...\n" );
-	act.sa_handler = backtrace_handler;
-	sigaction( SIGSEGV, &act, NULL );
-	foo( 3 );
-
-	fprintf( stderr, "\n" );
 	fprintf( stderr, "uncaught exception:\n" );
 	expecting_abort_backtrace = true;
 	throw IntendedUncaughtException {};

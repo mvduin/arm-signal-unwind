@@ -14,11 +14,6 @@ and link the resulting object into your application or library.
 To verify the code is working properly in your environment, build and run the test/demo:
   make check
 The expected output is something like this:
-  via return (no siginfo)... ok
-  via return (with siginfo)... ok
-  via exception (no siginfo)... ok
-  via exception (with siginfo)... ok
-
   backtrace in segv...
   ./test(_Z9backtracev+0xd)[0x458f72]
   ./test(_Z17backtrace_handleri+0xb)[0x458f98]
@@ -35,6 +30,11 @@ The expected output is something like this:
   ./test(main+0x10f)[0x459160]
   /lib/arm-linux-gnueabihf/libc.so.6(__libc_start_main+0x97)[0xb6cddaac]
   ok
+
+  via return (no siginfo)... ok
+  via return (with siginfo)... ok
+  via exception (no siginfo)... ok
+  via exception (with siginfo)... ok
 
   uncaught exception:
   ./test(_Z9backtracev+0xd)[0x458f72]
