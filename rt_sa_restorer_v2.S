@@ -16,3 +16,6 @@ __default_rt_sa_restorer_v2:
 	.handlerdata
 	.word	128	// offset to ucontext
 	.fnend 
+
+// indicate we don't need an executable stack
+.section	.note.GNU-stack,"",%progbits
